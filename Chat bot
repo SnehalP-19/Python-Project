@@ -1,0 +1,53 @@
+event_services = {
+    "Venue": 50000,
+    "Catering": 70000,
+    "Photography": 25000,
+    "Music": 15000,
+    "Decoration": 30000,
+}
+
+def show_services():
+    print("\n📋 Available Services:")
+    for name, price in event_services.items():
+        print(f"- {name}: ₹{price}")
+
+def calculate_cost(choices):
+    return sum(event_services[s] for s in choices)
+
+def negotiate(base, offer):
+    margin = 0.15
+    min_acceptable = base * (1 - margin)
+    if offer >= base:
+        return "✅ Accepted!", base
+    elif offer >= min_acceptable:
+        return f"✅ Deal accepted at ₹{offer}", offer
+    elif offer >= base * 0.7:
+        counter = int((base + offer) / 2)
+        return f"🤝 Counter offer: ₹{counter}", counter
+    else:
+        return "❌ Offer too low. Rejected.", None
+
+def main():
+    show_services()
+    selected = input("Enter services (comma-separated): ").title().split(',')
+    selected = [s.strip() for s in selected if s.strip() in event_services]
+    if not selected:
+        print("⚠️ No valid service selected.")
+        return
+
+    base = calculate_cost(selected)
+    print(f"\n💰 Base Cost: ₹{base}")
+    
+    try:
+        offer = int(input("💬 Your Offer: ₹"))
+        message, final_price = negotiate(base, offer)
+        print(message)
+        if final_price:
+            print(f"💼 Final Price: ₹{final_price}")
+    except ValueError:
+        print("❗ Enter a valid number.")
+
+main()
+
+
+
