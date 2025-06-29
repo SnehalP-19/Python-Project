@@ -1,0 +1,48 @@
+import streamlit as st
+
+# Event services with mock prices
+event_services = {
+    "Venue": 50000,
+    "Catering": 70000,
+    "Photography": 25000,
+    "Music DJ": 15000,
+    "Decoration": 30000,
+    "Security": 10000,
+    "Transportation": 12000
+}
+
+# Smart negotiation logic
+def negotiate(base_cost, offer):
+    margin = 0.15  # 15% flexibility
+    min_acceptable = base_cost * (1 - margin)
+
+    if offer >= base_cost:
+        return "✅ Full price accepted! Thank you!", base_cost
+    elif offer >= min_acceptable:
+        return f"✅ Deal! We'll accept your offer of ₹{offer}.", offer
+    elif offer >= base_cost * 0.7:
+        counter = int((offer + base_cost) / 2)
+        return f"🤝 Hmm, that's a bit low. How about ₹{counter}?", counter
+    else:
+        return "❌ Sorry, your offer is too low to continue negotiations.", None
+
+# Streamlit UI
+st.set_page_config(page_title="Event Negotiation Bot", page_icon="🤖")
+st.title("🎉 Event Cost Estimator & Negotiation Bot")
+
+st.header("📋 Select Services You Need")
+selected_services = st.multiselect("Choose from below:", list(event_services.keys()))
+
+if selected_services:
+    total_cost = sum(event_services[service] for service in selected_services)
+    st.success(f"💰 Estimated Total Cost: ₹{total_cost}")
+
+    offer = st.number_input("💬 Enter your offer (in ₹):", min_value=0, step=1000)
+
+    if st.button("🤖 Negotiate"):
+        message, final_price = negotiate(total_cost, offer)
+        st.info(message)
+        if final_price:
+            st.success(f"✅ Final Agreed Cost: ₹{final_price}")
+else:
+    st.warning("Please select at least one service to continue.")
